@@ -15,3 +15,4 @@ cmd.sh
 *.log
 .env
 logs
+.sass-cache

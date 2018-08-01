@@ -6,6 +6,7 @@ import (
 	"github.com/hunterlong/statup/core"
 	"github.com/hunterlong/statup/handlers"
 	"github.com/hunterlong/statup/notifiers"
+	"github.com/hunterlong/statup/source"
 	"github.com/hunterlong/statup/types"
 	"github.com/hunterlong/statup/utils"
 	"github.com/rendon/testcli"
@@ -24,15 +25,12 @@ var (
 	dir         string
 )
 
-func init() {
-	dir = utils.Directory
-}
-
 func RunInit(t *testing.T) {
-	core.RenderBoxes()
-	os.Remove(dir + "/statup.db")
-	os.Remove(dir + "/cmd/config.yml")
-	os.Remove(dir + "/cmd/index.html")
+	dir = utils.Directory
+	source.RenderBoxes()
+	os.Remove(dir + "/statup.database")
+	os.Remove(dir + "/config.yml")
+	os.Remove(dir + "/index.html")
 	route = handlers.Router()
 	LoadDotEnvs()
 	core.CoreApp = core.NewCore()
@@ -189,13 +187,13 @@ func TestExportCommand(t *testing.T) {
 }
 
 func TestAssetsCommand(t *testing.T) {
+	dir := utils.Directory
 	c := testcli.Command("statup", "assets")
 	c.Run()
 	t.Log(c.Stdout())
-	assert.True(t, fileExists(dir+"/assets/robots.txt"))
-	assert.True(t, fileExists(dir+"/assets/js/main.js"))
-	assert.True(t, fileExists(dir+"/assets/css/base.css"))
-	assert.True(t, fileExists(dir+"/assets/scss/base.scss"))
+	assert.FileExists(t, dir+"/assets/robots.txt")
+	assert.FileExists(t, dir+"/assets/js/main.js")
+	assert.FileExists(t, dir+"/assets/scss/base.scss")
 }
 
 func RunMakeDatabaseConfig(t *testing.T, db string) {
@@ -226,7 +224,7 @@ func RunMakeDatabaseConfig(t *testing.T, db string) {
 	assert.Nil(t, err)
 	assert.Equal(t, db, core.Configs.Connection)
 
-	err = core.DbConnection(core.Configs.Connection, false, dir)
+	err = core.DbConnection(core.Configs.Connection, false)
 	assert.Nil(t, err)
 }
 
@@ -559,7 +557,7 @@ func RunSettingsHandler(t *testing.T) {
 }
 
 func Cleanup(t *testing.T) {
-	os.Remove(dir + "/statup.db")
+	os.Remove(dir + "/statup.database")
 	//os.Remove(gopath+"/cmd/config.yml")
 	os.RemoveAll(dir + "/assets")
 	os.RemoveAll(dir + "/logs")

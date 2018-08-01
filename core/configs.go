@@ -12,12 +12,13 @@ import (
 )
 
 func LoadConfig() (*types.Config, error) {
+	dir := utils.Directory
 	if os.Getenv("DB_CONN") != "" {
 		utils.Log(1, "DB_CONN environment variable was found, waiting for database...")
 		return LoadUsingEnv()
 	}
 	Configs = new(types.Config)
-	file, err := ioutil.ReadFile("config.yml")
+	file, err := ioutil.ReadFile(dir + "/config.yml")
 	if err != nil {
 		return nil, errors.New("config.yml file not found - starting in setup mode")
 	}
@@ -74,7 +75,7 @@ func LoadUsingEnv() (*types.Config, error) {
 		Email:       "info@localhost.com",
 	}
 
-	err := DbConnection(dbConfig.DbConn, true, ".")
+	err := DbConnection(dbConfig.DbConn, true)
 	if err != nil {
 		utils.Log(4, err)
 		return nil, err

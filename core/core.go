@@ -1,7 +1,6 @@
 package core
 
 import (
-	"github.com/GeertJohan/go.rice"
 	"github.com/hunterlong/statup/notifiers"
 	"github.com/hunterlong/statup/types"
 	"github.com/pkg/errors"
@@ -20,11 +19,6 @@ type Core struct {
 var (
 	Configs     *types.Config
 	CoreApp     *Core
-	SqlBox      *rice.Box
-	CssBox      *rice.Box
-	ScssBox     *rice.Box
-	JsBox       *rice.Box
-	TmplBox     *rice.Box
 	SetupMode   bool
 	UsingAssets bool
 	VERSION     string
@@ -62,7 +56,7 @@ func InitApp() {
 
 func InsertNotifierDB() error {
 	if DbSession == nil {
-		err := DbConnection(CoreApp.DbConnection, false, ".")
+		err := DbConnection(CoreApp.DbConnection, false)
 		if err != nil {
 			return errors.New("database connection has not been created")
 		}

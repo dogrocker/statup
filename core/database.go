@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"github.com/go-yaml/yaml"
+	"github.com/hunterlong/statup/source"
 	"github.com/hunterlong/statup/types"
 	"github.com/hunterlong/statup/utils"
 	"os"
@@ -25,11 +26,12 @@ var (
 
 type DbConfig types.DbConfig
 
-func DbConnection(dbType string, retry bool, location string) error {
+func DbConnection(dbType string, retry bool) error {
 	var err error
+	dir := utils.Directory
 	if dbType == "sqlite" {
 		sqliteSettings = sqlite.ConnectionURL{
-			Database: location + "/statup.db",
+			Database: dir + "/statup.database",
 		}
 		DbSession, err = sqlite.Open(sqliteSettings)
 		if err != nil {
@@ -86,7 +88,7 @@ func DbConnection(dbType string, retry bool, location string) error {
 
 func waitForDb(dbType string) error {
 	time.Sleep(5 * time.Second)
-	return DbConnection(dbType, true, ".")
+	return DbConnection(dbType, true)
 }
 
 func DatabaseMaintence() {
@@ -108,7 +110,8 @@ func DeleteAllSince(table string, date time.Time) {
 
 func (c *DbConfig) Save() error {
 	var err error
-	config, err := os.Create("config.yml")
+	dir := utils.Directory
+	config, err := os.Create(dir + "/config.yml")
 	if err != nil {
 		utils.Log(4, err)
 		return err
@@ -126,7 +129,7 @@ func (c *DbConfig) Save() error {
 		utils.Log(3, err)
 		return err
 	}
-	err = DbConnection(Configs.Connection, false, c.Location)
+	err = DbConnection(Configs.Connection, false)
 	if err != nil {
 		utils.Log(4, err)
 		return err
@@ -179,7 +182,7 @@ func RunDatabaseUpgrades() error {
 		return err
 	}
 	utils.Log(1, fmt.Sprintf("Checking for Database Upgrades since #%v", currentMigration))
-	upgrade, _ := SqlBox.String(CoreApp.DbConnection + "_upgrade.sql")
+	upgrade, _ := source.SqlBox.String(CoreApp.DbConnection + "_upgrade.sql")
 	// parse db version and upgrade file
 	ups := strings.Split(upgrade, "=========================================== ")
 	ups = reverseSlice(ups)
@@ -226,7 +229,7 @@ func RunDatabaseUpgrades() error {
 
 func DropDatabase() error {
 	utils.Log(1, "Dropping Database Tables...")
-	down, err := SqlBox.String("down.sql")
+	down, err := source.SqlBox.String("down.sql")
 	if err != nil {
 		return err
 	}
@@ -248,7 +251,7 @@ func CreateDatabase() error {
 	} else if CoreApp.DbConnection == "sqlite" {
 		sql = "sqlite_up.sql"
 	}
-	up, err := SqlBox.String(sql)
+	up, err := source.SqlBox.String(sql)
 	requests := strings.Split(up, ";")
 	for _, request := range requests {
 		_, err := DbSession.Exec(request)

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/hunterlong/statup/core"
+	"github.com/hunterlong/statup/source"
 	"github.com/hunterlong/statup/utils"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -13,7 +14,7 @@ import (
 
 func init() {
 	utils.InitLogs()
-	core.RenderBoxes()
+	source.RenderBoxes()
 }
 
 func TestIndexHandler(t *testing.T) {

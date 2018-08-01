@@ -5,6 +5,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/hunterlong/statup/core"
 	"github.com/hunterlong/statup/handlers"
+	"github.com/hunterlong/statup/source"
 	"github.com/hunterlong/statup/types"
 	"github.com/hunterlong/statup/utils"
 	"github.com/joho/godotenv"
@@ -21,6 +22,7 @@ var (
 )
 
 func init() {
+	directory = utils.Directory
 	utils.InitLogs()
 	LoadDotEnvs()
 	core.VERSION = VERSION
@@ -33,7 +35,7 @@ func main() {
 		os.Exit(0)
 	}
 	utils.Log(1, fmt.Sprintf("Starting Statup v%v", VERSION))
-	core.RenderBoxes()
+	source.RenderBoxes()
 	core.HasAssets(directory)
 
 	core.Configs, err = core.LoadConfig()
@@ -56,7 +58,7 @@ func LoadDotEnvs() error {
 
 func mainProcess() {
 	var err error
-	err = core.DbConnection(core.Configs.Connection, false, ".")
+	err = core.DbConnection(core.Configs.Connection, false)
 	if err != nil {
 		utils.Log(4, fmt.Sprintf("could not connect to database: %v", err))
 	}

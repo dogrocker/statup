@@ -5,14 +5,13 @@ import (
 	"github.com/hunterlong/statup/utils"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 	"upper.io/db.v3/sqlite"
 )
 
 var (
 	testNotifier *Tester
-	testDatabase string
+	dir          string
 )
 
 //
@@ -48,15 +47,13 @@ func (n *Tester) Test() error {
 }
 
 func init() {
-	testDatabase = os.Getenv("GOPATH")
-	testDatabase += "/src/github.com/hunterlong/statup"
-
+	dir = utils.Directory
 	utils.InitLogs()
 }
 
 func injectDatabase() {
 	sqliteDb := sqlite.ConnectionURL{
-		Database: testDatabase + "/statup.db",
+		Database: dir + "/statup.database",
 	}
 	dbSession, _ := sqlite.Open(sqliteDb)
 	Collections = dbSession.Collection("communication")

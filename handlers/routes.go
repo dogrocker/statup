@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/hunterlong/statup/core"
+	"github.com/hunterlong/statup/source"
 	"net/http"
 	"time"
 )
@@ -77,10 +78,10 @@ func LocalizedAssets(r *mux.Router) *mux.Router {
 		r.PathPrefix("/robots.txt").Handler(indexHandler)
 		r.PathPrefix("/favicon.ico").Handler(indexHandler)
 	} else {
-		r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(core.CssBox.HTTPBox())))
-		r.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(core.JsBox.HTTPBox())))
-		r.PathPrefix("/robots.txt").Handler(http.FileServer(core.TmplBox.HTTPBox()))
-		r.PathPrefix("/favicon.ico").Handler(http.FileServer(core.TmplBox.HTTPBox()))
+		r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(source.CssBox.HTTPBox())))
+		r.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(source.JsBox.HTTPBox())))
+		r.PathPrefix("/robots.txt").Handler(http.FileServer(source.TmplBox.HTTPBox()))
+		r.PathPrefix("/favicon.ico").Handler(http.FileServer(source.TmplBox.HTTPBox()))
 	}
 	return r
 }

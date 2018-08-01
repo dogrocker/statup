@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hunterlong/statup/core"
+	"github.com/hunterlong/statup/source"
 	"github.com/hunterlong/statup/types"
 	"github.com/hunterlong/statup/utils"
 	"github.com/joho/godotenv"
@@ -27,7 +28,7 @@ func CatchCLI(args []string) {
 	case "version":
 		fmt.Printf("Statup v%v\n", VERSION)
 	case "assets":
-		core.RenderBoxes()
+		source.RenderBoxes()
 		core.CreateAllAssets(dir)
 	case "sass":
 		core.CompileSASS(dir)
@@ -52,7 +53,7 @@ func CatchCLI(args []string) {
 	case "export":
 		var err error
 		fmt.Printf("Statup v%v Exporting Static 'index.html' page...\n", VERSION)
-		core.RenderBoxes()
+		source.RenderBoxes()
 		core.Configs, err = core.LoadConfig()
 		if err != nil {
 			utils.Log(4, "config.yml file not found")
@@ -90,7 +91,7 @@ func RunOnce() {
 	if err != nil {
 		utils.Log(4, "config.yml file not found")
 	}
-	err = core.DbConnection(core.Configs.Connection, false, ".")
+	err = core.DbConnection(core.Configs.Connection, false)
 	if err != nil {
 		utils.Log(4, err)
 	}
@@ -126,7 +127,7 @@ func HelpEcho() {
 
 func TestPlugin(plug types.PluginActions) {
 	defer utils.DeleteFile("./.plugin_test.db")
-	core.RenderBoxes()
+	source.RenderBoxes()
 
 	info := plug.GetInfo()
 	fmt.Printf("\n" + BRAKER + "\n")
@@ -191,7 +192,7 @@ func FakeSeed(plug types.PluginActions) {
 	if err != nil {
 		utils.Log(3, err)
 	}
-	up, _ := core.SqlBox.String("sqlite_up.sql")
+	up, _ := source.SqlBox.String("sqlite_up.sql")
 	requests := strings.Split(up, ";")
 	for _, request := range requests {
 		_, err := core.DbSession.Exec(request)

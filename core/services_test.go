@@ -18,8 +18,8 @@ func TestSelectAllServices(t *testing.T) {
 
 func TestSelectHTTPService(t *testing.T) {
 	service := SelectService(1)
-	assert.Equal(t, "Google", service.ToService().Name)
-	assert.Equal(t, "http", service.ToService().Type)
+	assert.Equal(t, "Google", service.Name)
+	assert.Equal(t, "http", service.Type)
 }
 
 func TestSelectTCPService(t *testing.T) {
